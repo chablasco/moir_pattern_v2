@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CB Moir Pattern v2</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    let numEllipses = 3;
+    let movers = [];
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight, P2D); // Fullscreen canvas with P2D renderer
+      background(0);
+      noFill();
+
+      // Initialize EllipseMover objects
+      for (let i = 0; i < numEllipses; i++) {
+        movers.push(new EllipseMover());
+      }
+    }
+
+    function draw() {
+      background(0); // Clear the background on each frame
+      for (let mover of movers) {
+        mover.update();
+        mover.display();
+      }
+    }
+
+    class EllipseMover {
+      constructor() {
+        this.x = random(width);
+        this.y = random(height);
+        this.xSpeed = random(-1, 1);
+        this.ySpeed = random(-1, 1);
+        this.maxRadius = 2000; // Maximum radius of the rings
+        this.ringSpacing = 10; // Spacing between concentric rings
+        this.startColor = color(random(100, 255), random(100, 255), random(100, 255), 100);
+        this.endColor = color(random(100, 255), random(100, 255), random(100, 255), 100);
+      }
+
+      update() {
+        this.x += this.xSpeed;
+        this.y += this.ySpeed;
+
+        // Bounce off the edges of the canvas
+        if (this.x < 0 || this.x > width) {
+          this.xSpeed *= -1;
+        }
+        if (this.y < 0 || this.y > height) {
+          this.ySpeed *= -1;
+        }
+      }
+
+      display() {
+        for (let r = this.ringSpacing; r < this.maxRadius; r += this.ringSpacing) {
+          let inter = map(r, this.ringSpacing, this.maxRadius, 0, 1);
+          stroke(lerpColor(this.startColor, this.endColor, inter));
+          ellipse(this.x, this.y, r * 2, r * 2);
+        }
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight); // Adjust canvas size dynamically
+      background(0); // Clear background when resizing
+    }
+  </script>
+</body>
+</html>
